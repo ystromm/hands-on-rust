@@ -1,43 +1,81 @@
+use crate::VisitorAction::{AcceptWithNote, Refuse};
 use std::io::stdin;
+
+#[derive(Debug)]
+enum VisitorAction {
+    Accept,
+    AcceptWithNote { note: String },
+    Refuse,
+    Probation,
+}
 
 #[derive(Debug)]
 struct Visitor {
     name: String,
-    greeting: String,
+    action: VisitorAction,
+    age: i8,
 }
 
 impl Visitor {
-    fn new(name: &str, greeting: &str) -> Self {
+    fn new(name: &str, action: VisitorAction, age: i8) -> Self {
         Self {
             name: name.to_lowercase(),
-            greeting: greeting.to_string(),
+            action,
+            age,
         }
     }
 
     fn greet(&self) {
-        println!("{}", self.greeting)
+        match &self.action {
+            VisitorAction::Accept => println!("Welcome to the three house {}!", self.name),
+            VisitorAction::AcceptWithNote { .. } => {
+                println!("Welcome to the three house {}!", self.name);
+                if self.age < 21 {
+                    println!("Do not serve alcohol to {}.", self.name);
+                }
+            }
+            Refuse => println!("Do not allow {} in!", self.name),
+            VisitorAction::Probation => {
+                println!("{} is now a probationary member!", self.name);
+            }
+        }
     }
 }
 
 fn main() {
-    println!("Hello, what's your name?");
-    let your_name = what_is_your_name();
-
-    println!("Hello, {}!", capitalize_first(&your_name));
-
-    let visitors = [
-        Visitor::new("bert", "Hullo!"),
-        Visitor::new("bob", "Welcome in!"),
-        Visitor::new("joe", "Your drink is ready."),
+    let mut visitors = vec![
+        Visitor::new("Bert", VisitorAction::Accept, 45),
+        Visitor::new(
+            "Bob",
+            AcceptWithNote {
+                note: String::from("Milk in the fridge!"),
+            },
+            15,
+        ),
+        Visitor::new("Joe", Refuse, 30),
     ];
-    let visitor = visitors.iter().find(|visitor| visitor.name == your_name);
-    match visitor {
-        Some(visitor) => {
-            println!("{:?}", visitor);
-            visitor.greet()
+
+    loop {
+        println!("Hello, what's your name (leave empty to quit)?");
+        let your_name = what_is_your_name();
+        println!("Hello, {}!", capitalize_first(&your_name));
+        let visitor = visitors.iter().find(|visitor| visitor.name == your_name);
+        match visitor {
+            Some(visitor) => {
+                println!("{:?}", visitor);
+                visitor.greet()
+            }
+            None => {
+                if !your_name.is_empty() {
+                    println!("{} is not on the list.", your_name);
+                    visitors.push(Visitor::new(&your_name, VisitorAction::Probation, 0));
+                } else {
+                    break;
+                }
+            }
         }
-        None => println!("Sorry, you are not welcome!"),
     }
+    println!("{:#?}", visitors);
 }
 
 fn capitalize_first(s: &str) -> String {
