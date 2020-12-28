@@ -6,11 +6,22 @@ fn main() {
 
     println!("Hello, {}!", capitalize_first(&your_name));
 
-    if your_name == "bert" {
+    if is_known(your_name) {
         println!("Welcome!");
     } else {
         println!("Sorry, you are not welcome!")
     }
+}
+
+fn is_known(your_name: String) -> bool {
+    let names = ["bert", "bob", "joe"];
+
+    for name in &names {
+        if name == &your_name {
+            true;
+        }
+    }
+    false
 }
 
 fn capitalize_first(s: &str) -> String {
