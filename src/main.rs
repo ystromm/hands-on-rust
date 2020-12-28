@@ -1,5 +1,6 @@
 use std::io::stdin;
 
+#[derive(Debug)]
 struct Visitor {
     name: String,
     greeting: String,
@@ -29,11 +30,12 @@ fn main() {
         Visitor::new("bob", "Welcome in!"),
         Visitor::new("joe", "Your drink is ready."),
     ];
-    let known_visitor = visitors.iter().find(|visitor| visitor.name == your_name);
-    let known_visitor = known_visitor;
-    let visitor = known_visitor;
+    let visitor = visitors.iter().find(|visitor| visitor.name == your_name);
     match visitor {
-        Some(visitor) => visitor.greet(),
+        Some(visitor) => {
+            println!("{:?}", visitor);
+            visitor.greet()
+        }
         None => println!("Sorry, you are not welcome!"),
     }
 }
