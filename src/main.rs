@@ -1,27 +1,41 @@
 use std::io::stdin;
 
+struct Visitor {
+    name: String,
+    greeting: String,
+}
+
+impl Visitor {
+    fn new(name: &str, greeting: &str) -> Self {
+        Self {
+            name: name.to_lowercase(),
+            greeting: greeting.to_string(),
+        }
+    }
+
+    fn greet(&self) {
+        println!("{}", self.greeting)
+    }
+}
+
 fn main() {
     println!("Hello, what's your name?");
     let your_name = what_is_your_name();
 
     println!("Hello, {}!", capitalize_first(&your_name));
 
-    if is_known(your_name) {
-        println!("Welcome!");
-    } else {
-        println!("Sorry, you are not welcome!")
+    let visitors = [
+        Visitor::new("bert", "Hullo!"),
+        Visitor::new("bob", "Welcome in!"),
+        Visitor::new("joe", "Your drink is ready."),
+    ];
+    let known_visitor = visitors.iter().find(|visitor| visitor.name == your_name);
+    let known_visitor = known_visitor;
+    let visitor = known_visitor;
+    match visitor {
+        Some(visitor) => visitor.greet(),
+        None => println!("Sorry, you are not welcome!"),
     }
-}
-
-fn is_known(your_name: String) -> bool {
-    let names = ["bert", "bob", "joe"];
-
-    for name in &names {
-        if name == &your_name {
-            true;
-        }
-    }
-    false
 }
 
 fn capitalize_first(s: &str) -> String {
@@ -34,6 +48,7 @@ fn capitalize_first(s: &str) -> String {
         .chain(chars)
         .collect()
 }
+
 fn what_is_your_name() -> String {
     let mut your_name = String::new();
 
