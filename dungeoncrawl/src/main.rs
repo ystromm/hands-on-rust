@@ -1,11 +1,13 @@
 mod map;
 mod player;
 mod map_builder;
+mod camera;
 
 use bracket_lib::prelude::*;
 use crate::prelude::{Map, SCREEN_WIDTH, SCREEN_HEIGHT};
 use crate::player::Player;
 use crate::map_builder::MapBuilder;
+use crate::camera::Camera;
 
 pub mod prelude {
     pub use bracket_lib::prelude::*;
@@ -16,11 +18,13 @@ pub mod prelude {
     pub use crate::map::*;
     pub use crate::player::*;
     pub use crate::map_builder::*;
+    pub use crate::camera::*;
 }
 
 struct State {
     map: Map,
     player: Player,
+    camera: Camera,
 }
 
 impl State {
@@ -30,16 +34,18 @@ impl State {
         State {
             map: map_builder.map,
             player: Player::new(map_builder.player_start),
+            camera: Camera::new(map_builder.player_start)
         }
     }
 }
 
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
-        ctx.cls();
-        self.player.update(ctx, &self.map);
-        self.map.render(ctx);
-        self.player.render(ctx);
+        self.player.update(ctx, &self.map, &mut self.camera);
+        ctx.set_active_console(0);
+        self.map.render(ctx, &self.camera);
+        ctx.set_active_console(1);
+        self.player.render(ctx, &self.camera);
     }
 }
 
