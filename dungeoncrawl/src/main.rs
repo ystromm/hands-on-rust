@@ -3,7 +3,7 @@ mod player;
 mod map_builder;
 
 use bracket_lib::prelude::*;
-use crate::prelude::{Map};
+use crate::prelude::{Map, SCREEN_WIDTH, SCREEN_HEIGHT};
 use crate::player::Player;
 use crate::map_builder::MapBuilder;
 
@@ -43,9 +43,18 @@ impl GameState for State {
     }
 }
 
+const DISPLAY_WIDTH: i32 = SCREEN_WIDTH/2;
+const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT/2;
+
 fn main() -> BError {
-    let context = BTermBuilder::simple80x50()
+    let context = BTermBuilder::new()
         .with_title("Dungeon Crawler")
+        .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        .with_tile_dimensions(32, 32)
+        .with_resource_path("resources/")
+        .with_font("dungeonfont.png", 32, 32)
+        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
+        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
         .build()?;
     main_loop(context, State::new())
 }
